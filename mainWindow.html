@@ -19,8 +19,25 @@
   ipcRenderer.on("item:add", (e, item) => {
     const listItem = document.createElement("li");
     listItem.textContent = item;
+    const clearButton = document.createElement("button");
+    clearButton.textContent = "x";
+    clearButton.classList.add("remove-item");
+    listItem.appendChild(clearButton);
     list.appendChild(listItem);
+    clearButton.onclick = (e) => {
+      removeItem(e.target);
+    };
   });
+
+  ipcRenderer.on("item:clear", (e) => {
+    list.innerHTML = "";
+  });
+
+  function removeItem(item) {
+    if (item.parentElement) {
+      item.parentElement.remove();
+    }
+  }
 </script>
 
 </html>
