@@ -19,6 +19,10 @@ app.on("ready", () => {
       slashes: true
     })
   );
+  // close small windows if main window closed
+  mainWindow.on("closed", () => {
+    app.quit();
+  });
 
   // Build menu from template
   const mainMenu = Menu.buildFromTemplate(mainMenuTemplate);
@@ -29,8 +33,8 @@ app.on("ready", () => {
 // this happens in the menu below
 function createAddWindow() {
   addWindow = new BrowserWindow({
-    width: 200,
-    height: 300,
+    width: 300,
+    height: 200,
     title: "Add Shopping List Item"
   });
   // load the html file into the window
@@ -41,6 +45,10 @@ function createAddWindow() {
       slashes: true
     })
   );
+  // Garbage collection handle
+  addWindow.on("close", () => {
+    addWindow = null;
+  });
 }
 
 // Create menu template
@@ -50,6 +58,7 @@ const mainMenuTemplate = [
     submenu: [
       {
         label: "Add Item",
+        accelerator: process.platform === "darwin" ? "Command+I" : "Ctrl+I",
         click() {
           createAddWindow();
         }
@@ -68,3 +77,26 @@ const mainMenuTemplate = [
     ]
   }
 ];
+
+// If Mac, add empty item to start of menu
+if (process.platform === "darwin") {
+  mainMenuTemplate.unshift({});
+}
+
+// Add developer tools if not in production
+if (process.env.NODE_ENV !== "production") {
+  mainMenuTemplate.push({
+    label: "Developer Tools",
+    submenu: [
+      {
+        label: "Toggle Developer Tools",
+        accelerator: process.platform === "darwin" ? "Command+T" : "Ctrl+T",
+        click(item, focusedWindow) {
+          focusedWindow.toggleDevTools();
+        }
+      }, {
+        role: "reload"
+      }
+    ]
+  });
+}
