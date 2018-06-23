@@ -3,10 +3,21 @@
 
 <head>
   <title>Shopping List</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-beta/css/materialize.min.css">
+  <style>
+    .remove-item {
+      display: inline-block;
+      margin-left: 1em;
+    }
+  </style>
 </head>
 
 <body>
-  <h1>Shopping List</h1>
+  <nav>
+    <div class="nav-wrapper">
+      <a class="brand-logo center">Shopping List</a>
+    </div>
+  </nav>
   <ul>
 
   </ul>
@@ -17,11 +28,14 @@
   const list = document.querySelector("ul");
 
   ipcRenderer.on("item:add", (e, item) => {
+    list.classList.add("collection");
     const listItem = document.createElement("li");
+    listItem.classList.add("collection-item");
     listItem.textContent = item;
     const clearButton = document.createElement("button");
     clearButton.textContent = "x";
     clearButton.classList.add("remove-item");
+    clearButton.classList.add("btn-floating", "waves-effect", "red", "accent-2");
     listItem.appendChild(clearButton);
     list.appendChild(listItem);
     clearButton.onclick = (e) => {
@@ -31,11 +45,15 @@
 
   ipcRenderer.on("item:clear", (e) => {
     list.innerHTML = "";
+    list.classList.remove("collection");
   });
 
   function removeItem(item) {
     if (item.parentElement) {
       item.parentElement.remove();
+    }
+    if (!list.children.length) {
+      list.classList.remove("collection");
     }
   }
 </script>
